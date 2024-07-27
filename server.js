@@ -4,11 +4,10 @@ const {
     SlashCommandBuilder,
 } = require('discord.js'); //Discord
 let request = require('request'); //HTML request
-let HTMLParser = require('node-html-parser'); //HTMLParser
 
 const { fetcher } = require('./fetcher');
 const { parser } = require('./parser');
-const { detailedFormatter } = require('./formatter');
+const { oneLineFormatter, detailedFormatter } = require('./formatter');
 const { rectifyTickerSymbol } = require('./tickerSymbol');
 
 const bot = new Client({
@@ -53,15 +52,45 @@ bot.on('interactionCreate', async (interaction) => {
             const code = rectifyTickerSymbol(
                 interaction.options.getString('symbol'),
             );
-            fetcher(code).then((body) => {
-                const info = parser(body);
 
-                if (info) {
-                    interaction.reply(detailedFormatter(info));
+            if (code.startsWith(':')) {
+                const isValid =
+                    Object.prototype.hasOwnProperty.call(
+                        nameToTitleMapping,
+                        code,
+                    ) &&
+                    Object.prototype.hasOwnProperty.call(
+                        nameToSymbolMapping,
+                        code,
+                    );
+
+                if (isValid) {
+                    Promise.all(
+                        nameToSymbolMapping[code].map((sym) => fetcher(sym)),
+                    ).then((bodies) => {
+                        const infoList = bodies.map((body) => parser.body);
+                        const formatted = infoList.map((info) =>
+                            oneLineFormatter(info),
+                        );
+
+                        interaction.reply(
+                            `${nameToTitleMapping[code]}\n${formatted.join('\n')}`,
+                        );
+                    });
                 } else {
-                    interaction.reply('冇呢隻股');
+                    interaction.reply('冇呢個列表');
                 }
-            });
+            } else {
+                fetcher(code).then((body) => {
+                    const info = parser(body);
+
+                    if (info) {
+                        interaction.reply(detailedFormatter(info));
+                    } else {
+                        interaction.reply('冇呢隻股');
+                    }
+                });
+            }
         }
 
         if (interaction.commandName === 'gpt') {
