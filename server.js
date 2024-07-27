@@ -68,7 +68,7 @@ bot.on('interactionCreate', async (interaction) => {
                     Promise.all(
                         nameToSymbolMapping[code].map((sym) => fetcher(sym)),
                     ).then((bodies) => {
-                        const infoList = bodies.map((body) => parser.body);
+                        const infoList = bodies.map((body) => parser(body));
                         const formatted = infoList.map((info) =>
                             oneLineFormatter(info),
                         );
