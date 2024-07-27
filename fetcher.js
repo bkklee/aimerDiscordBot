@@ -1,3 +1,5 @@
+const request = require('request');
+
 const fetcher = async (code) => {
     const get_options = {
         url: 'https://finance.yahoo.com/quote/' + code + '/chart?nn=1',
