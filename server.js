@@ -4,8 +4,10 @@ const {
     SlashCommandBuilder,
 } = require('discord.js'); //Discord
 let request = require('request'); //HTML request
-let HTMLParser = require('node-html-parser'); //HTMLParser
 
+const { fetcher } = require('./fetcher');
+const { parser } = require('./parser');
+const { oneLineFormatter, detailedFormatter } = require('./formatter');
 const { rectifyTickerSymbol } = require('./tickerSymbol');
 
 const bot = new Client({
@@ -15,6 +17,7 @@ const bot = new Client({
         GatewayIntentBits.MessageContent,
     ],
 });
+
 bot.on('ready', () => {
     bot.user.setActivity('Ref:rain');
     const stock = new SlashCommandBuilder()
@@ -49,61 +52,45 @@ bot.on('interactionCreate', async (interaction) => {
             const code = rectifyTickerSymbol(
                 interaction.options.getString('symbol'),
             );
-            let tmpReply = '';
 
-            const get_options = {
-                url: 'https://finance.yahoo.com/quote/' + code + '/chart?nn=1',
-                headers: {
-                    'User-Agent':
-                        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
-                },
-            };
+            if (code.startsWith(':')) {
+                const isValid =
+                    Object.prototype.hasOwnProperty.call(
+                        nameToTitleMapping,
+                        code,
+                    ) &&
+                    Object.prototype.hasOwnProperty.call(
+                        nameToSymbolMapping,
+                        code,
+                    );
 
-            request.get(get_options, (err, response, body) => {
-                htmlfile = HTMLParser.parse(body);
+                if (isValid) {
+                    Promise.all(
+                        nameToSymbolMapping[code].map((sym) => fetcher(sym)),
+                    ).then((bodies) => {
+                        const infoList = bodies.map((body) => parser(body));
+                        const formatted = infoList.map((info) =>
+                            oneLineFormatter(info),
+                        );
 
-                if (htmlfile.querySelector('#quote-header-info')) {
-                    let curPrice =
-                        htmlfile.querySelector('#quote-header-info').firstChild
-                            .nextSibling.nextSibling.firstChild.firstChild
-                            .firstChild.text;
-                    let change =
-                        htmlfile.querySelector('#quote-header-info').firstChild
-                            .nextSibling.nextSibling.firstChild.firstChild
-                            .firstChild.nextSibling.firstChild.text;
-                    let percentage =
-                        (parseFloat(change.replace(',', '')) /
-                            (parseFloat(curPrice.replace(',', '')) -
-                                parseFloat(change.replace(',', '')))) *
-                        100;
-
-                    tmpReply +=
-                        '> ' +
-                        htmlfile.querySelector('#quote-header-info').firstChild
-                            .nextSibling.firstChild.firstChild.firstChild.text;
-                    tmpReply += '\n';
-                    tmpReply +=
-                        '> Price: **' +
-                        curPrice +
-                        '**' +
-                        '/' +
-                        change +
-                        '\t' +
-                        '(' +
-                        percentage.toPrecision(3) +
-                        '%)';
-                    tmpReply += '\n';
-                    tmpReply +=
-                        '> ' +
-                        htmlfile.querySelector('#quote-market-notice')
-                            .firstChild.text;
-                    tmpReply += '\n';
-                    interaction.reply(tmpReply);
+                        interaction.reply(
+                            `${nameToTitleMapping[code]}\n${formatted.join('\n')}`,
+                        );
+                    });
                 } else {
-                    tmpReply += '冇呢隻股';
-                    interaction.reply(tmpReply);
+                    interaction.reply('冇呢個列表');
                 }
-            });
+            } else {
+                fetcher(code).then((body) => {
+                    const info = parser(body);
+
+                    if (info) {
+                        interaction.reply(detailedFormatter(info));
+                    } else {
+                        interaction.reply('冇呢隻股');
+                    }
+                });
+            }
         }
 
         if (interaction.commandName === 'gpt') {
