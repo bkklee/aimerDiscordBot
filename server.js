@@ -2,6 +2,8 @@ const { Client, GatewayIntentBits, SlashCommandBuilder } = require('discord.js')
 let request = require("request"); //HTML request
 let HTMLParser = require('node-html-parser'); //HTMLParser
 
+const { rectifyTickerSymbol } = require('./tickerSymbol');
+
 const bot = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent] });
 bot.on("ready", ()=>{
     bot.user.setActivity("Ref:rain");
@@ -18,7 +20,7 @@ bot.on('interactionCreate', async (interaction)=>{
     try{
         if(interaction.commandName==='stock'){
             //const REGEX_CHINESE = /[\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff\uff66-\uff9f]/;
-            const code = interaction.options.getString('symbol');
+            const code = rectifyTickerSymbol(interaction.options.getString('symbol'));
             let tmpReply = "";
     
             const get_options = {
