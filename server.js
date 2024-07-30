@@ -7,6 +7,7 @@ let request = require('request'); //HTML request
 
 const { fetcher } = require('./fetcher');
 const { parser } = require('./parser');
+const { nameToSymbolsMapping, nameToTitleMapping } = require('./bulk');
 const { oneLineFormatter, detailedFormatter } = require('./formatter');
 const { rectifyTickerSymbol } = require('./tickerSymbol');
 
@@ -60,13 +61,13 @@ bot.on('interactionCreate', async (interaction) => {
                         code,
                     ) &&
                     Object.prototype.hasOwnProperty.call(
-                        nameToSymbolMapping,
+                        nameToSymbolsMapping,
                         code,
                     );
 
                 if (isValid) {
                     Promise.all(
-                        nameToSymbolMapping[code].map((sym) => fetcher(sym)),
+                        nameToSymbolsMapping[code].map((sym) => fetcher(sym)),
                     ).then((bodies) => {
                         const infoList = bodies.map((body) => parser(body));
                         const formatted = infoList.map((info) =>
@@ -74,7 +75,7 @@ bot.on('interactionCreate', async (interaction) => {
                         );
 
                         interaction.reply(
-                            `${nameToTitleMapping[code]}\n${formatted.join('\n')}`,
+                            `**${nameToTitleMapping[code]}**\n${formatted.join('\n')}`,
                         );
                     });
                 } else {

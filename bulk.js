@@ -46,4 +46,4 @@ const nameToTitleMapping = {
     ':alt': 'Alternative assets',
 };
 
-module.exports = { nameToSymbolMapping, nameToTitleMapping };
+module.exports = { nameToSymbolsMapping, nameToTitleMapping };
