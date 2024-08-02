@@ -70,7 +70,7 @@ bot.on('interactionCreate', async (interaction) => {
                         nameToSymbolsMapping[code].map((sym) => fetcher(sym)),
                     );
                     const infoList = bodies.flatMap((body) => {
-                        const parsed = parser(body);
+                        const parsed = body && parser(body);
 
                         return parsed ? [parsed] : [];
                     });
