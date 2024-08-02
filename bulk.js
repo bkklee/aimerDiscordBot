@@ -13,11 +13,12 @@ const nameToSymbolsMapping = {
     ':bank': [
         '0005.HK',
         '1398.HK',
+        '2888.HK',
         'D05.SI',
         'ICICIBANK.NS',
         'BNP.PA',
+        'UBSG.SW',
         'DNB.OL',
-        'BAC',
         'C',
     ],
     ':insurance': ['1299.HK', '2318.HK', 'ZURN.SW', 'CS.PA', 'BRK-B'],
@@ -31,7 +32,30 @@ const nameToSymbolsMapping = {
         'KO',
         'MCD',
     ],
-    ':semi': ['8035.T', '2330.TW', '005930.KS', 'NVDA', 'MU', 'ARM', 'TXN'],
+    ':semi': [
+        '8035.T',
+        '2330.TW',
+        '2454.TW',
+        '005930.KS',
+        'ASML.AS',
+        'NVDA',
+        'MU',
+        'ARM',
+        'TXN',
+    ],
+    ':buffett': [
+        'AAPL',
+        'BAC',
+        'AXP',
+        'KO',
+        'CVX',
+        'OXY',
+        '8001.T',
+        '8058.T',
+        '1211.HK',
+    ], // TODO
+    ':treasury': ['SHV', 'IEI', 'IEF', 'TLH', 'TLT'],
+    ':healthcare': ['GSK.L', 'AZN.L', 'SAN.PA', 'ROG.SW', 'NOVO-B.CO', 'JNJ'],
     ':alt': ['GC=F', 'SI=F', 'CL=F', 'BTC-USD', 'ETH-USD'],
 };
 
@@ -43,6 +67,9 @@ const nameToTitleMapping = {
     ':insurance': 'Major insurance companies',
     ':food': 'Major food companies',
     ':semi': 'Major semiconductor companies',
+    ':buffett': 'Buffett stocks',
+    ':treasury': 'Treasury ETFs',
+    ':healthcare': 'Major healthcare companies',
     ':alt': 'Alternative assets',
 };
 
