@@ -66,31 +66,34 @@ bot.on('interactionCreate', async (interaction) => {
                     );
 
                 if (isValid) {
-                    Promise.all(
+                    const bodies = await Promise.all(
                         nameToSymbolsMapping[code].map((sym) => fetcher(sym)),
-                    ).then((bodies) => {
-                        const infoList = bodies.map((body) => parser(body));
-                        const formatted = infoList.map((info) =>
-                            oneLineFormatter(info),
-                        );
+                    );
+                    const infoList = bodies.flatMap((body) => {
+                        const parsed = body && parser(body);
 
-                        interaction.reply(
-                            `**${nameToTitleMapping[code]}**\n${formatted.join('\n')}`,
-                        );
+                        return parsed ? [parsed] : [];
                     });
+                    const formatted = infoList.flatMap((info) =>
+                        info ? [oneLineFormatter(info)] : [],
+                    );
+
+                    interaction.reply(
+                        `**${nameToTitleMapping[code]}**\n${formatted.join('\n')}`,
+                    );
                 } else {
                     interaction.reply('冇呢個列表');
                 }
             } else {
-                fetcher(code).then((body) => {
-                    const info = parser(body);
+                const body = await fetcher(code);
 
-                    if (info) {
-                        interaction.reply(detailedFormatter(info));
-                    } else {
-                        interaction.reply('冇呢隻股');
-                    }
-                });
+                const info = parser(body);
+
+                if (info) {
+                    interaction.reply(detailedFormatter(info));
+                } else {
+                    interaction.reply('冇呢隻股');
+                }
             }
         }
 
