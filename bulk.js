@@ -1,14 +1,14 @@
 const nameToSymbolsMapping = {
     ':asia': [
         '^HSI',
-        '^000300.SS',
+        '000300.SS',
         '^TWII',
         '^N225',
         '^NSEI',
         '^STI',
         '^TASI.SR',
     ],
-    ':europe': ['^FTSE', '^FCHI', '^GDAXI', '^OSEAX.OL'],
+    ':europe': ['^FTSE', '^FCHI', '^GDAXI', 'OSEAX.OL'],
     ':us': ['^DJI', '^GSPC', '^IXIC', '^RUT', '^VIX'],
     ':bank': [
         '0005.HK',
