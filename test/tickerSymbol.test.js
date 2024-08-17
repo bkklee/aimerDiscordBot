@@ -25,6 +25,12 @@ describe('Ticker symbol functions', () => {
         expect(rectified).toBe('601398.SS');
     });
 
+    test('rectify ticker symbol - can add suffix .SI', () => {
+        const rectified = rectifyTickerSymbol('D05');
+
+        expect(rectified).toBe('D05.SI');
+    });
+
     test('rectify ticker symbol - can retain English', () => {
         const rectified = rectifyTickerSymbol('KO');
 
@@ -35,5 +41,11 @@ describe('Ticker symbol functions', () => {
         const rectified = rectifyTickerSymbol('1328.T');
 
         expect(rectified).toBe('1328.T');
+    });
+
+    test('rectify ticker symbol - does not add .SI when the main part has both digit and letter', () => {
+        const rectified = rectifyTickerSymbol('2887E.TW');
+
+        expect(rectified).toBe('2887E.TW');
     });
 });
