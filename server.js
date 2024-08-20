@@ -10,6 +10,7 @@ const { parser } = require('./parser');
 const { nameToSymbolsMapping, nameToTitleMapping } = require('./bulk');
 const { oneLineFormatter, detailedFormatter } = require('./formatter');
 const { rectifyTickerSymbol } = require('./tickerSymbol');
+const { askAI } = require('./aiClient');
 
 const bot = new Client({
     intents: [
@@ -82,6 +83,7 @@ bot.on('interactionCreate', async (interaction) => {
                         `**${nameToTitleMapping[code]}**\n${formatted.join('\n')}`,
                     );
                 } else {
+                    // TODO: Can AI suggest?
                     interaction.reply('冇呢個列表');
                 }
             } else {
@@ -92,7 +94,18 @@ bot.on('interactionCreate', async (interaction) => {
                 if (info) {
                     interaction.reply(detailedFormatter(info));
                 } else {
-                    interaction.reply('冇呢隻股');
+                    // TODO: Find a way to escape or sanitize `code`.
+                    const question = `Please tell me the ticker symbol for "${code}" used in Yahoo! Finance. If it is listed in multiple exchanges, prioritize the listing in Asia, then Europe, then Americas. Please retain the exchange suffix, and do not put extra words in the response.`;
+                    const symbol = rectifyTickerSymbol(await askAI(question));
+
+                    const bodyForAISymbol = await fetcher(symbol);
+                    const parsed = parser(bodyForAISymbol);
+
+                    if (parsed) {
+                        interaction.reply(detailedFormatter(parsed));
+                    } else {
+                        interaction.reply('冇呢隻股');
+                    }
                 }
             }
         }
@@ -100,6 +113,7 @@ bot.on('interactionCreate', async (interaction) => {
         if (interaction.commandName === 'gpt') {
             const messages = interaction.options.getString('text');
 
+            // TODO: Remove duplicate code when `askAI` function is stable.
             const url = process.env.OPENAI_API_URL;
             const headers = {
                 'Content-Type': 'application/json',
