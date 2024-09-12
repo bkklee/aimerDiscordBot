@@ -48,4 +48,10 @@ describe('Ticker symbol functions', () => {
 
         expect(rectified).toBe('2887E.TW');
     });
+
+    test('rectify ticker symbol - does not touch Chinese', () => {
+        const rectified = rectifyTickerSymbol('中國平安');
+
+        expect(rectified).toBe('中國平安');
+    });
 });

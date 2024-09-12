@@ -87,25 +87,37 @@ bot.on('interactionCreate', async (interaction) => {
                     interaction.reply('冇呢個列表');
                 }
             } else {
-                const body = await fetcher(code);
+                try {
+                    const body = await fetcher(code);
 
-                const info = parser(body);
+                    if (body) {
+                        const info = parser(body);
 
-                if (info) {
-                    interaction.reply(detailedFormatter(info));
-                } else {
-                    // TODO: Find a way to escape or sanitize `code`.
-                    const question = `Please tell me the ticker symbol for "${code}" used in Yahoo! Finance. If it is listed in multiple exchanges, prioritize the listing in Asia, then Europe, then Americas. Please retain the exchange suffix, and do not put extra words in the response.`;
-                    const symbol = rectifyTickerSymbol(await askAI(question));
+                        if (info) {
+                            interaction.reply(detailedFormatter(info));
 
-                    const bodyForAISymbol = await fetcher(symbol);
-                    const parsed = parser(bodyForAISymbol);
-
-                    if (parsed) {
-                        interaction.reply(detailedFormatter(parsed));
-                    } else {
-                        interaction.reply('冇呢隻股');
+                            return;
+                        }
                     }
+                } catch {
+                    // pass
+                }
+
+                await interaction.reply('Thinking');
+
+                // TODO: Find a way to escape or sanitize `code`.
+                const question = `Please tell me the ticker symbol for "${code}" used in Yahoo! Finance. If it is listed in multiple exchanges, prioritize the listing in Asia, then Europe, then Americas. Please retain the exchange suffix, and do not put extra words in the response.`;
+                const symbol = rectifyTickerSymbol(await askAI(question));
+
+                await interaction.editReply('Querying');
+
+                const bodyForAISymbol = await fetcher(symbol);
+                const parsed = parser(bodyForAISymbol);
+
+                if (parsed) {
+                    interaction.editReply(detailedFormatter(parsed));
+                } else {
+                    interaction.editReply('冇呢隻股');
                 }
             }
         }
