@@ -7,6 +7,7 @@ const nameToSymbolsMapping = {
         '^NSEI',
         '^STI',
         '^TASI.SR',
+        '^JKSE',
     ],
     ':europe': ['^FTSE', '^FCHI', '^GDAXI', 'OSEAX.OL'],
     ':us': ['^DJI', '^GSPC', '^IXIC', '^RUT', '^VIX'],
