@@ -3,7 +3,27 @@ const HTMLParser = require('node-html-parser');
 const parser = (body) => {
     const htmlfile = HTMLParser.parse(body);
 
-    if (htmlfile.querySelector('#quote-header-info')) {
+
+    if(htmlfile.querySelector('.livePrice')){
+        let curPrice = htmlfile.querySelector('.livePrice').text;
+        let change = htmlfile.querySelector('.priceChange').text;
+        let changeNum = parseFloat(change.replaceAll(',', ''));
+        let curPriceNum = parseFloat(curPrice.replaceAll(',', ''));
+        let percentage = (changeNum / (curPriceNum - changeNum)) * 100;
+        let name = "UPDATING";
+        let marketNotice = "UPDATING";
+
+        return {
+            curPrice,
+            change,
+            percentage,
+            name,
+            marketNotice,
+        };
+    }
+
+    //OLD
+    /*if (htmlfile.querySelector('#quote-header-info')) {
         const headerInfoFirstChild =
             htmlfile.querySelector('#quote-header-info').firstChild;
         const priceChild =
@@ -27,7 +47,7 @@ const parser = (body) => {
             name,
             marketNotice,
         };
-    }
+    }*/
 
     return null;
 };

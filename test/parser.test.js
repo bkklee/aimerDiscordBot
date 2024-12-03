@@ -9,12 +9,12 @@ describe('Parser', () => {
         const { percentage, ...parsed } = parser(body);
 
         expect(parsed).toEqual({
-            change: '+0.250',
-            curPrice: '66.250',
-            marketNotice: 'At close:  04:08PM HKT',
-            name: 'HSBC Holdings plc (0005.HK)',
+            change: '+0.400',
+            curPrice: '72.950',
+            marketNotice: 'UPDATING',
+            name: 'UPDATING',
         });
-        expect(percentage.toPrecision(3)).toBe('0.379');
+        expect(percentage.toPrecision(3)).toBe('0.551');
     });
 
     test('Can return null when the input is not appropriate', () => {
