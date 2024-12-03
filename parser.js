@@ -3,7 +3,6 @@ const HTMLParser = require('node-html-parser');
 const parser = (body) => {
     const htmlfile = HTMLParser.parse(body);
 
-
     if(htmlfile.querySelector('.livePrice')){
         let curPrice = htmlfile.querySelector('.livePrice').text;
         let change = htmlfile.querySelector('.priceChange').text;
