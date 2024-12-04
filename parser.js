@@ -3,9 +3,9 @@ const HTMLParser = require('node-html-parser');
 const parser = (body) => {
     const htmlfile = HTMLParser.parse(body);
 
-    if(htmlfile.querySelector('.livePrice')){
-        let curPrice = htmlfile.querySelector('.livePrice').text;
-        let change = htmlfile.querySelector('.priceChange').text;
+    if(htmlfile.querySelector('.js-quote-price-root')){
+        let curPrice = htmlfile.querySelector('.js-quote-price-root').firstChild.firstChild.nextSibling.nextSibling.firstChild.text
+        let change = htmlfile.querySelector('.js-quote-price-root').firstChild.firstChild.nextSibling.nextSibling.firstChild.nextSibling.firstChild.firstChild.text.replaceAll("Dollar change","")
         let changeNum = parseFloat(change.replaceAll(',', ''));
         let curPriceNum = parseFloat(curPrice.replaceAll(',', ''));
         let percentage = (changeNum / (curPriceNum - changeNum)) * 100;
@@ -20,33 +20,6 @@ const parser = (body) => {
             marketNotice,
         };
     }
-
-    //OLD
-    /*if (htmlfile.querySelector('#quote-header-info')) {
-        const headerInfoFirstChild =
-            htmlfile.querySelector('#quote-header-info').firstChild;
-        const priceChild =
-            headerInfoFirstChild.nextSibling.nextSibling.firstChild.firstChild
-                .firstChild;
-        let curPrice = priceChild.text;
-        let change = priceChild.nextSibling.firstChild.text;
-        let changeNum = parseFloat(change.replaceAll(',', ''));
-        let curPriceNum = parseFloat(curPrice.replaceAll(',', ''));
-        let percentage = (changeNum / (curPriceNum - changeNum)) * 100;
-        let name =
-            headerInfoFirstChild.nextSibling.firstChild.firstChild.firstChild
-                .text;
-        let marketNotice = htmlfile.querySelector('#quote-market-notice')
-            .firstChild.text;
-
-        return {
-            curPrice,
-            change,
-            percentage,
-            name,
-            marketNotice,
-        };
-    }*/
 
     return null;
 };

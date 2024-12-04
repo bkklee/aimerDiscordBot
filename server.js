@@ -152,7 +152,11 @@ bot.on('interactionCreate', async (interaction) => {
             );
         }
     } catch {
-        interaction.reply('Something is wrong, tell me to fix it.');
+        try{
+            interaction.reply('Something is wrong, tell me to fix it.');
+        }catch{
+            interaction.editReply('Something is wrong, tell me to fix it.');
+        }
     }
 });
 
