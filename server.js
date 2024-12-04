@@ -98,12 +98,16 @@ bot.on('interactionCreate', async (interaction) => {
 
                             return;
                         }
+                    }else{
+                        interaction.reply("Problems");
+
                     }
                 } catch {
                     // pass
+                    interaction.reply("Problems");
                 }
 
-                await interaction.reply('Thinking');
+                /*await interaction.reply('Thinking');
 
                 // TODO: Find a way to escape or sanitize `code`.
                 const question = `Please tell me the ticker symbol for "${code}" used in Yahoo! Finance. If it is listed in multiple exchanges, prioritize the listing in Asia, then Europe, then Americas. Please retain the exchange suffix, and do not put extra words in the response.`;
@@ -118,7 +122,7 @@ bot.on('interactionCreate', async (interaction) => {
                     interaction.editReply(detailedFormatter(parsed));
                 } else {
                     interaction.editReply('冇呢隻股');
-                }
+                }*/
             }
         }
 
