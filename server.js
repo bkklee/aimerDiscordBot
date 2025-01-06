@@ -5,7 +5,6 @@ const {
 } = require('discord.js'); //Discord
 let request = require('request'); //HTML request
 
-const { fetcher } = require('./fetcher');
 const { parser } = require('./parser');
 const { nameToSymbolsMapping, nameToTitleMapping } = require('./bulk');
 const { oneLineFormatter, detailedFormatter } = require('./formatter');
@@ -68,7 +67,7 @@ bot.on('interactionCreate', async (interaction) => {
 
                 if (isValid) {
                     const bodies = await Promise.all(
-                        nameToSymbolsMapping[code].map((sym) => fetcher(sym)),
+                        nameToSymbolsMapping[code].map((sym) => sym),
                     );
                     const infoList = bodies.flatMap((body) => {
                         const parsed = body && parser(body);
@@ -88,10 +87,8 @@ bot.on('interactionCreate', async (interaction) => {
                 }
             } else {
                 try {
-                    const body = await fetcher(code);
-
-                    if (body) {
-                        const info = parser(body);
+                    if (code) {
+                        const info = await parser(code);
 
                         if (info) {
                             interaction.reply(detailedFormatter(info));
