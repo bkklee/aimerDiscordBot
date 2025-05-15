@@ -33,7 +33,7 @@ bot.on('ready', () => {
     bot.application.commands.create(stock);
     const gpt = new SlashCommandBuilder()
         .setName('gpt')
-        .setDescription('GPT-4o')
+        .setDescription('OpenAI o3')
         .addStringOption((option) =>
             option
                 .setName('text')
@@ -94,32 +94,32 @@ bot.on('interactionCreate', async (interaction) => {
                             interaction.reply(detailedFormatter(info));
 
                             return;
+                        }else{
+                            //ASK AI
+                            interaction.reply('Thinking');
+
+                            // TODO: Find a way to escape or sanitize `code`.
+                            const question = `Please tell me the ticker symbol for "${code}" used in Yahoo! Finance. If it is listed in multiple exchanges, prioritize according to the most likely location of the headquarter of the company. Please retain the exchange suffix, and do not put extra words in the response.`;
+                            const symbol = rectifyTickerSymbol(await askAI(question));
+
+                            await interaction.editReply('Querying');
+
+                            const info = await parser(symbol);
+
+                            if (info) {
+                                await interaction.editReply(detailedFormatter(info));
+                            } else {
+                                await interaction.editReply('冇呢隻股');
+                            }
+                            return;
                         }
                     }else{
-                        interaction.reply("Problems");
-
+                        await interaction.reply("Problems");
                     }
                 } catch {
                     // pass
-                    interaction.reply("Problems");
+                    await interaction.editReply("Problems");
                 }
-
-                /*await interaction.reply('Thinking');
-
-                // TODO: Find a way to escape or sanitize `code`.
-                const question = `Please tell me the ticker symbol for "${code}" used in Yahoo! Finance. If it is listed in multiple exchanges, prioritize the listing in Asia, then Europe, then Americas. Please retain the exchange suffix, and do not put extra words in the response.`;
-                const symbol = rectifyTickerSymbol(await askAI(question));
-
-                await interaction.editReply('Querying');
-
-                const bodyForAISymbol = await fetcher(symbol);
-                const parsed = parser(bodyForAISymbol);
-
-                if (parsed) {
-                    interaction.editReply(detailedFormatter(parsed));
-                } else {
-                    interaction.editReply('冇呢隻股');
-                }*/
             }
         }
 

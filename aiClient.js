@@ -7,11 +7,10 @@ const askAI = async (question, url = process.env.OPENAI_API_URL) => {
     };
     const settings = {
         messages: [{ role: 'system', content: 'You are a teacher.' }],
-        temperature: 0.7,
-        top_p: 0.95,
+        temperature: 1,
         frequency_penalty: 0,
         presence_penalty: 0,
-        max_tokens: 800,
+        max_completion_tokens: 2000,
         stop: null,
     };
 
@@ -22,6 +21,7 @@ const askAI = async (question, url = process.env.OPENAI_API_URL) => {
             if (e) {
                 rej(e);
             } else {
+                console.log(body.choices[0].message.content)
                 res(body.choices[0].message.content);
             }
         });
