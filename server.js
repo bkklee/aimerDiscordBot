@@ -126,31 +126,11 @@ bot.on('interactionCreate', async (interaction) => {
         if (interaction.commandName === 'gpt') {
             const messages = interaction.options.getString('text');
 
-            // TODO: Remove duplicate code when `askAI` function is stable.
-            const url = process.env.OPENAI_API_URL;
-            const headers = {
-                'Content-Type': 'application/json',
-                'api-key': process.env.OPENAI_API_KEY,
-            };
-            const settings = {
-                messages: [{ role: 'system', content: 'You are a teacher.' }],
-                temperature: 0.7,
-                top_p: 0.95,
-                frequency_penalty: 0,
-                presence_penalty: 0,
-                max_tokens: 800,
-                stop: null,
-            };
-
-            settings['messages'].push({ role: 'user', content: messages });
-
             await interaction.reply('Waiting');
-            request.post(
-                { url: url, headers: headers, json: settings },
-                function (e, r, body) {
-                    interaction.editReply(body.choices[0].message.content);
-                },
-            );
+
+            let reply = await askAI(messages)
+            interaction.editReply(reply);
+            return;
         }
     } catch {
         try{
