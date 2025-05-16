@@ -21,8 +21,12 @@ const askAI = async (question, url = process.env.OPENAI_API_URL) => {
             if (e) {
                 rej(e);
             } else {
-                console.log(body.choices[0].message.content)
-                res(body.choices[0].message.content);
+                if(body.error){
+                    console.log(body)
+                    res(body.error.code)
+                }else{
+                    res(body.choices[0].message.content);
+                }
             }
         });
     });
